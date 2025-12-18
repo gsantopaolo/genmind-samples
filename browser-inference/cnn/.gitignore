@@ -1,0 +1,12 @@
+# Pretrained model weights
+models/
+
+# Training artifacts
+checkpoints/
+datasets/
+*.png
+__pycache__/
+*.pyc
+
+# Exported ONNX models
+models_onnx/
