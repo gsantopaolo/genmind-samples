@@ -9,41 +9,17 @@
 
 ## 📊 Performance Metrics (Actual Results on M2 Max)
 
-### 1. PyTorch (Native) ⭐ FASTEST
-```
-Device:              MPS (Metal Performance Shaders)
-Backend:             PyTorch 2.x
-Batch Size:          32
-Per-Batch Time:      84.23 ms
-Per-Image Time:      2.63 ms  ⭐ FASTEST
-Throughput:          380 images/sec
-Total Test Time:     0.337 seconds
-Accuracy:            97.66%
-```
-
-### 2. ONNX Runtime (Python) 🥈 FAST
-```
-Device:              CoreML Execution Provider (GPU/Neural Engine)
-Backend:             ONNX Runtime + CoreML
-Batch Size:          1 (WebGL compatibility requirement)
-Per-Batch Time:      4.77 ms
-Per-Image Time:      4.77 ms  (1.8x slower than PyTorch)
-Throughput:          210 images/sec
-Total Test Time:     0.611 seconds
-Accuracy:            97.66%
-```
-
-### 3. Web Browser (JavaScript) 🌐 ACCEPTABLE
-```
-Device:              WebGL (GPU)
-Backend:             ONNX Runtime Web + WebGL
-Batch Size:          1 (WebGL limitation)
-Per-Image Time:      26.76 ms  (10x slower than PyTorch)
-Throughput:          37 images/sec
-Browser:             Chrome (WebGL enabled)
-Accuracy:            97.66%
-Note:                100% client-side, no server needed!
-```
+| Metric | PyTorch (Native) ⭐ | ONNX Runtime (Python) 🥈 | Web Browser (JavaScript) 🌐 |
+|--------|---------------------|--------------------------|----------------------------|
+| **Device** | MPS (Metal Performance Shaders) | CoreML Execution Provider (GPU/Neural Engine) | WebGL (GPU) |
+| **Backend** | PyTorch 2.x | ONNX Runtime + CoreML | ONNX Runtime Web + WebGL |
+| **Batch Size** | 32 | 1 (WebGL compatibility) | 1 (WebGL limitation) |
+| **Per-Batch Time** | 84.23 ms | 4.77 ms | 26.76 ms |
+| **Per-Image Time** | **2.63 ms** ⭐ **FASTEST** | **4.77 ms** (1.8x slower) | **26.76 ms** (10x slower) |
+| **Throughput** | **380 images/sec** | 210 images/sec | 37 images/sec |
+| **Total Test Time** | 0.337 seconds | 0.611 seconds | - |
+| **Accuracy** | **97.66%** | **97.66%** | **97.66%** |
+| **Notes** | Maximum GPU utilization | Lighter dependencies | 100% client-side, no server! |
 
 ## 🎯 Comparison Table
 
