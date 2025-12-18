@@ -68,17 +68,22 @@ def export_to_onnx(
     # Create dummy input (batch_size=1, channels=3, height=224, width=224)
     dummy_input = torch.randn(1, 3, img_size, img_size, dtype=torch.float32)
     
-    # Export model to ONNX using PyTorch 2.x exporter
+    # Export model to ONNX with FIXED batch size for WebGL compatibility
+    # WebGL execution provider doesn't support dynamic batch dimensions
+    # Using fixed batch_size=1 for browser inference
     logger.info(f"📦 Exporting to ONNX (opset_version={opset_version})...")
+    logger.info("Using FIXED batch size (batch=1) for WebGL/browser compatibility")
+    
     torch.onnx.export(
         model,
         dummy_input,
         output_path,
         export_params=True,
         opset_version=opset_version,
-        do_constant_folding=True,
+        dynamo=False,
         input_names=['input'],
         output_names=['output']
+        # NO dynamic_axes - fixed batch size for WebGL
     )
     logger.info(f"✅ ONNX model saved to {output_path}")
     

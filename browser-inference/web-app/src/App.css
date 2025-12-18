@@ -1,0 +1,326 @@
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #4CAF50;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.info-badges {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.info-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #333;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.upload-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-button {
+  display: inline-block;
+  padding: 15px 30px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.upload-button:hover {
+  background: #45a049;
+}
+
+.file-info {
+  margin-top: 15px;
+  color: #888;
+  font-style: italic;
+}
+
+.preview-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.preview-image {
+  max-width: 400px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.classify-button, .reset-button {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.classify-button {
+  background: #2196F3;
+  color: white;
+}
+
+.classify-button:hover:not(:disabled) {
+  background: #0b7dda;
+}
+
+.classify-button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.reset-button {
+  background: #666;
+  color: white;
+}
+
+.reset-button:hover {
+  background: #555;
+}
+
+.error-message {
+  background: #f44336;
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.results-section {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 30px;
+  margin: 30px 0;
+  border: 2px solid #4CAF50;
+}
+
+.results-section h2 {
+  color: #4CAF50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.prediction-card {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.prediction-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.class-emoji {
+  font-size: 4rem;
+}
+
+.prediction-main h3 {
+  font-size: 1.8rem;
+  color: #4CAF50;
+  margin-bottom: 5px;
+}
+
+.confidence {
+  color: #888;
+  font-size: 1.2rem;
+}
+
+.probabilities {
+  margin-top: 20px;
+}
+
+.probabilities h3 {
+  margin-bottom: 15px;
+  color: #ccc;
+}
+
+.performance-metrics {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #444;
+}
+
+.performance-metrics h3 {
+  color: #4CAF50;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  background: #333;
+  border-radius: 6px;
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.metric-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.comparison-note {
+  background: #1e1e1e;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #4CAF50;
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-top: 10px;
+}
+
+.comparison-note strong {
+  color: #4CAF50;
+}
+
+.probability-bar-container {
+  display: grid;
+  grid-template-columns: 180px 1fr 80px;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.probability-label {
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.probability-bar-wrapper {
+  background: #333;
+  border-radius: 10px;
+  height: 24px;
+  overflow: hidden;
+}
+
+.probability-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #81C784);
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+.probability-value {
+  text-align: right;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.instructions {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.instructions h3 {
+  color: #4CAF50;
+  margin-bottom: 15px;
+}
+
+.instructions ol {
+  text-align: left;
+  margin-left: 20px;
+  line-height: 1.8;
+}
+
+.instructions code {
+  background: #333;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #4CAF50;
+}
+
+.note {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #444;
+  font-size: 0.9rem;
+  color: #888;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .preview-image {
+    max-width: 100%;
+  }
+
+  .probability-bar-container {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .probability-value {
+    text-align: left;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}

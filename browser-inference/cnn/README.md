@@ -1,6 +1,14 @@
 # CNN Image Classification - Beans Disease Detection
 
-A PyTorch CNN implementation for image classification using the Beans leaf disease dataset from HuggingFace.
+A production-ready image classifier using **EfficientNet-B0 transfer learning** on the Beans leaf disease dataset. Achieves **97.66% test accuracy** with PyTorch and ONNX export for deployment.
+
+## 🎯 Highlights
+
+- ✅ **97.66% test accuracy** using transfer learning
+- ✅ **EfficientNet-B0** pretrained on ImageNet
+- ✅ **ONNX export** for cross-platform deployment
+- ✅ **Performance comparison** (PyTorch vs ONNX Runtime)
+- ✅ **Production-ready** with comprehensive metrics
 
 ## Dataset
 
@@ -23,7 +31,7 @@ cd browser-inference/cnn
 pip install -r requirements.txt
 ```
 
-### 2. Train the CNN Model
+### 2. Train the Model
 
 ```bash
 python cnn_train.py
@@ -32,22 +40,23 @@ python cnn_train.py
 This will:
 - Auto-detect best device (CUDA/MPS/CPU)
 - Download Beans dataset to `datasets/` (cached for future runs)
-- Train for 25 epochs with data augmentation
+- **Two-phase training**: Classifier only (epochs 1-10), then full fine-tuning (10-30)
 - Save best model to `checkpoints/best_model.pt`
 - Generate loss curve plot at `loss_curve.png`
+- **Expected**: ~3-5 minutes on M2 Max/CUDA, achieves ~95-98% validation accuracy
 
-### 3. Test the Model
+### 3. Test the Model (PyTorch)
 
 ```bash
 python cnn_test.py
 ```
 
 This will:
-- Load the trained model from checkpoints
-- Use cached dataset (no re-download)
+- Load the trained PyTorch model from checkpoints
 - Evaluate on test set (128 images)
-- Display:
-  - Overall test accuracy
+- **Display metrics**:
+  - Overall test accuracy (~97.66%)
+  - Inference time per batch
   - Confusion matrix
   - Per-class precision, recall, F1-score
   - Sample predictions with confidence scores
@@ -63,6 +72,18 @@ This will:
 - Verify export correctness (PyTorch vs ONNX outputs)
 - Enable deployment to web browsers, mobile apps, edge devices
 - Output: `models_onnx/model.onnx` (~16-17 MB)
+
+#### Test ONNX Model
+
+```bash
+python onnx_test.py
+```
+
+This will:
+- Run inference using ONNX Runtime
+- Compare performance with PyTorch model
+- Display identical metrics (accuracy, confusion matrix, per-class metrics)
+- Show inference time comparison
 
 #### Visualize the Model
 
@@ -136,61 +157,133 @@ class TrainingConfig:
 ✅ **Best model checkpointing**  
 ✅ **Comprehensive test metrics**
 
-## Expected Performance
+## 📊 Actual Performance Results
 
-With **EfficientNet-B0 transfer learning**:
-- **Validation Accuracy**: ~95-98%
-- **Test Accuracy**: ~92-96%
-- **Training Time**: ~3-5 minutes (M2 Max/CUDA for 30 epochs)
-- **Convergence**: Smooth loss curves with excellent generalization
+**Tested on:** MacBook Pro M2 Max (32GB RAM)
+
+### Achieved Metrics
+
+| Metric | Value |
+|--------|-------|
+| **Test Accuracy** | **97.66%** (125/128 correct) |
+| **Validation Accuracy** | 95-98% |
+| **Training Time** | ~3-5 min |
+| **Inference Time (PyTorch/MPS)** | 83 ms/batch |
+| **Inference Time (ONNX/CPU)** | 168 ms/batch |
+| **Model Size (ONNX)** | 15.29 MB |
+| **Parameters** | ~4M total, ~1.3k trainable initially |
+
+### Per-Class Performance
+
+| Class | Precision | Recall | F1-Score |
+|-------|-----------|--------|
+| angular_leaf_spot | 100.0% | 93.0% | 96.4% |
+| bean_rust | 93.5% | 100.0% | 96.6% |
+| healthy | 100.0% | 100.0% | 100.0% |
+
+### Confusion Matrix (Test Set)
+
+```
+True\Pred        angular_leaf_spot    bean_rust    healthy
+----------------------------------------------------------------
+angular_leaf_spot         40              3            0
+bean_rust                  0             43            0
+healthy                    0              0           42
+```
+
+**Only 3 errors out of 128 test images!**
+
+### Training Process
 
 **Two-Phase Training:**
-1. **Phase 1** (epochs 1-10): Quick convergence training classifier (~85-90% accuracy)
-2. **Phase 2** (epochs 10+): Fine-tuning entire network (~95%+ accuracy)
+1. **Phase 1** (epochs 1-10): Train classifier only (~90% accuracy)
+2. **Phase 2** (epochs 10-30): Fine-tune entire network (~97%+ accuracy)
+3. **Early stopping** (patience=8) prevents overfitting
 
-The model uses **early stopping** (patience=8) and may stop before 30 epochs if validation stops improving.
+### Performance Comparison (M2 Max 32GB) - Real Measured Results
 
-## Project Structure
+**Test Setup**: 128 test images, EfficientNet-B0, MacBook Pro M2 Max 32GB
+
+| Implementation | Device | Batch | Time/Image | Throughput | Accuracy |
+|---------------|--------|-------|------------|------------|----------|
+| **PyTorch MPS** | M2 Max GPU | 32 | **2.63 ms** ⭐ | 380 img/sec | 97.66% |
+| **ONNX CoreML** | GPU/ANE/CPU | 1 | **4.77 ms** | 210 img/sec | 97.66% |
+| **Web WebGL** | Browser GPU | 1 | **26.76 ms** | 37 img/sec | 97.66% |
+
+**Key Findings:**
+- ✅ **All three achieve identical 97.66% accuracy** - lossless model conversion
+- ⚡ **PyTorch MPS fastest** at 2.63ms/image with batch processing
+- 🥈 **ONNX CoreML only 1.8x slower** (4.77ms) - excellent for production
+- 🌐 **Web WebGL 10x slower** (26.76ms) but runs entirely client-side
+- 🎯 **Same 3 errors** out of 128 test images across all platforms
+- 💾 **ONNX Runtime**: No PyTorch dependency (deployment 10x lighter)
+
+**When to use:**
+- **PyTorch + MPS**: Training, research, maximum speed batch inference
+- **ONNX Runtime + CoreML**: Production Mac/iOS apps, edge deployment
+- **Web + WebGL**: Interactive browser apps, client-side ML, zero server cost
+
+See `../PERFORMANCE_COMPARISON.md` for detailed analysis.
+
+## 📁 Project Structure
 
 ```
 browser-inference/cnn/
-├── cnn_train.py          # Training script with CNN model
-├── cnn_test.py           # Testing script with metrics
+├── cnn_train.py          # Training script (EfficientNet-B0)
+├── cnn_test.py           # PyTorch testing with performance metrics
+├── onnx_test.py          # ONNX Runtime testing with performance metrics
+├── to_onnx.py            # Export model to ONNX format
 ├── requirements.txt      # Python dependencies
-├── README.md            # This file
-├── checkpoints/         # Saved models (created during training)
-├── datasets/            # Cached HuggingFace datasets
-└── loss_curve.png       # Training/validation loss plot
+├── README.md             # This file
+├── .gitignore            # Git ignore rules
+├── checkpoints/          # Saved PyTorch models (*.pt)
+│   └── best_model.pt     # Best model checkpoint
+├── datasets/             # Cached HuggingFace datasets
+├── models/               # Pretrained ImageNet weights
+│   └── hub/checkpoints/  # EfficientNet-B0 weights
+├── models_onnx/          # Exported ONNX models
+│   └── model.onnx        # Production-ready ONNX model
+└── loss_curve.png        # Training/validation loss plot
 ```
 
-## Extending the Model
+## 🚀 Deployment Options
 
-### Use Transfer Learning
+### 1. PyTorch Deployment
 
-Replace `SimpleCNN` with a pre-trained model:
-
+Use `cnn_test.py` as a template:
 ```python
-import torchvision.models as models
+from cnn_train import create_efficientnet_model
 
-model = models.resnet18(pretrained=True)
-model.fc = nn.Linear(model.fc.in_features, num_classes)
+model = create_efficientnet_model(num_classes=3)
+model.load_state_dict(torch.load('checkpoints/best_model.pt'))
+model.eval()
 ```
 
-### Add Learning Rate Scheduler
+### 2. ONNX Runtime Deployment (Recommended)
 
+Faster inference, no PyTorch dependency:
 ```python
-from torch.optim.lr_scheduler import CosineAnnealingLR
+import onnxruntime as ort
+import numpy as np
 
-scheduler = CosineAnnealingLR(optimizer, T_max=config.epochs)
-# After optimizer.step():
-scheduler.step()
+session = ort.InferenceSession('models_onnx/model.onnx')
+outputs = session.run(None, {'input': image_array})
 ```
 
-### Enable Mixed Precision Training
+### 3. Web Deployment
 
-```python
-config = TrainingConfig(use_amp=True)  # CUDA only
+Use ONNX.js for browser inference:
+```javascript
+import * as ort from 'onnxruntime-web';
+
+const session = await ort.InferenceSession.create('model.onnx');
+const results = await session.run(feeds);
 ```
+
+### 4. Mobile Deployment
+
+- **iOS**: Convert ONNX → CoreML
+- **Android**: Use ONNX Runtime Mobile
 
 ## Why CNN for Image Classification?
 

@@ -12,6 +12,7 @@ It provides detailed metrics including:
 import logging
 import os
 from pathlib import Path
+import time
 
 os.environ['TORCH_HOME'] = str(Path(__file__).parent / 'models')
 
@@ -165,6 +166,9 @@ def test_model(
     all_targets = []
     all_probabilities = []
     
+    # Track inference time
+    inference_times = []
+    
     logger.info("🧪 Running inference on test data...")
     
     with torch.inference_mode():
@@ -172,9 +176,15 @@ def test_model(
             xb = xb.to(device)
             yb = yb.to(device)
             
+            # Measure inference time
+            start_time = time.perf_counter()
+            
             logits = model(xb)
             probs = torch.softmax(logits, dim=1)
             preds = logits.argmax(dim=1)
+            
+            end_time = time.perf_counter()
+            inference_times.append(end_time - start_time)
             
             all_predictions.append(preds.cpu())
             all_targets.append(yb.cpu())
@@ -184,8 +194,20 @@ def test_model(
     targets = torch.cat(all_targets)
     probabilities = torch.cat(all_probabilities)
     
+    # Calculate average inference time
+    avg_inference_time = np.mean(inference_times) * 1000  # Convert to ms
+    total_time = sum(inference_times)
+    
     accuracy = (predictions == targets).float().mean().item()
+    
+    # Calculate per-image time for fair comparison
+    batch_size = test_loader.batch_size
+    per_image_time = avg_inference_time / batch_size
+    
     logger.info(f"\n✅ Overall Test Accuracy: {accuracy:.4f} ({accuracy * 100:.2f}%)")
+    logger.info(f"⏱️  Batch size: {batch_size}")
+    logger.info(f"⏱️  Average inference time: {avg_inference_time:.2f} ms/batch ({per_image_time:.2f} ms/image)")
+    logger.info(f"⏱️  Total inference time: {total_time:.3f} seconds")
     
     num_classes = len(class_names)
     conf_matrix = compute_confusion_matrix(predictions, targets, num_classes)
