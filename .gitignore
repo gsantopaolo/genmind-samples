@@ -216,5 +216,4 @@ deployment/data
 
 training-loop/datasets
 training-loop/checkpoints
-training-loop/
-posts/
+training-loop/loss_curve.png
